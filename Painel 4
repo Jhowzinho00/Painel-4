@@ -1,0 +1,79 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+   Name = "PAINEL ARSENAL",
+   LoadingTitle = "PAINEL ARSENAL - Red Edition",
+   LoadingSubtitle = "by Jhow",
+   ConfigurationSaving = { Enabled = true, FolderName = "PainelArsenal", FileName = "Config" },
+   
+   -- [ SISTEMA DE KEY COM PAGAMENTO ] --
+   KeySystem = true, 
+   KeySettings = {
+      Title = "Sistema de Verificação",
+      Subtitle = "Chave Necessária",
+      -- Nota atualizada com seu TikTok
+      Note = "Pague R$ 2,00 para obter a chave. Peça no TikTok: @Jonathan._.", 
+      FileName = "ArsenalKey", 
+      SaveKey = true,
+      GrabKeyFromSite = false,
+      Key = {"tung sahur"} 
+   },
+   
+   Theme = "DarkRed",
+   Size = UDim2.fromOffset(450, 350) 
+})
+
+local Tab = Window:CreateTab("Principal", 4483362458) 
+
+-- Variáveis de Controle
+local AimbotEnabled = false
+local HeadshotLock = false
+local WallCheck = false 
+local Smoothing = 0.25 
+local ESPEnabled = false
+local ESP_Lines_Enabled = false
+local ESP_Skeleton_Enabled = false 
+local ESP_Health_Enabled = false
+local ESP_Distance_Enabled = false
+local FOV_Visible = false 
+local FOV_Radius = 150 
+local ESP_Objects = {}
+
+-- Serviços
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local camera = workspace.CurrentCamera
+
+-- Configuração do FOV
+local FOVCircle = Drawing.new("Circle")
+FOVCircle.Thickness = 1.5
+FOVCircle.Color = Color3.fromRGB(255, 0, 0)
+FOVCircle.Filled = false 
+FOVCircle.Visible = false
+
+--- [ FUNÇÃO WALL CHECK ] ---
+local function IsVisible(targetPart)
+    if not WallCheck then return true end
+    local char = LocalPlayer.Character
+    if not char then return false end
+    local raycastParams = RaycastParams.new()
+    raycastParams.FilterType = Enum.RaycastFilterType.Exclude
+    raycastParams.FilterDescendantsInstances = {char, camera}
+    local ray = workspace:Raycast(camera.CFrame.Position, (targetPart.Position - camera.CFrame.Position).Unit * 1000, raycastParams)
+    if ray then return ray.Instance:IsDescendantOf(targetPart.Parent) end
+    return true
+end
+
+--- [ FUNÇÕES ESP ] ---
+local function CreateESP(plr)
+    local objects = {
+        Box = Drawing.new("Square"),
+        Line = Drawing.new("Line"),
+        HealthBarOutline = Drawing.new("Square"),
+        HealthBar = Drawing.new("Square"),
+        Distance = Drawing.new("Text"),
+        Skeleton = {} 
+    }
+    
+    objects.Box.Filled = false
